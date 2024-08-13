@@ -19,10 +19,18 @@ from .serializers import TeacherSerializer
 class StudentView(APIView):
     def get(self,request):
         students = Student.objects.all()
+        first_name = request.query_params.get("first_name")
+        country = request.query_params.get("country")
+        if country:
+            students = students.filter(country = country)
+        if first_name:
+            students = students.filter(first_name = first_name)
+
         serializer = StudentSerializer(students,many=True)
         return Response(serializer.data)
     
-    def post(self, request):
+
+    def post(self, request, id):
         serializer = StudentSerializer(data= request.data)
         if serializer.is_valid():
             serializer.save()
@@ -60,7 +68,7 @@ class CoursesView(APIView):
     def get(self,request):
         courses = Courses.objects.all()
         serializer = CoursesSerializer(courses,many=True)
-        return Response(serializer.data)
+        return Response(serializers)
     def post(self, request):
         serializer = CoursesSerializer(data= request.data)
         if serializer.is_valid():
@@ -84,6 +92,18 @@ class TeachersView(APIView):
     
 
 class StudentDetailView(APIView):
+    def enroll(self, student,course_id):
+        course = Courses.objects.get(id= course_id)
+        student.courses.add(course)
+        
+    def post(self, request, id):
+        student = Student.objects.get(id = id)
+        action = request.data.get("action")
+        if action=="enroll":
+            course_id = request.data.get("course_id")
+            self.enroll(Student, course_id)
+        return Response(status=status.HTTP_201_CREATED)
+    
     def get (self, request,id):
         student = Student.objects.get(id = id)
         serializer = StudentSerializer(student)
@@ -101,6 +121,30 @@ class StudentDetailView(APIView):
         student = Student.objects.get(id = id)
         student.delete()
         return Response(status=status.HTTP_202_ACCEPTED)
+    
+    def unenroll(self, student, course_id):
+        course = Courses.objects.get(id=course_id)
+        student.courses.remove(course)
+    def add_to_class(self, student, class_id):
+        student_class = Class.objects.get(id=class_id)
+        student_class.students.add(student)
+    def post(self, request, id):
+        student = Student.objects.get(id=id)
+        action = request.data.get("action")
+        if action == "enroll":
+            course_id = request.data.get("course_id")
+            self.enroll(student, course_id)
+            return Response(status=status.HTTP_201_CREATED)
+        elif action == "unenroll":
+            course_id = request.data.get("course_id")
+            self.unenroll(student, course_id)
+            return Response(status=status.HTTP_200_OK)
+        elif action == "add_to_class":
+            class_id = request.data.get("class_id")
+            self.add_to_class(student, class_id)
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+         return Response(status=status.HTTP_400_BAD_REQUEST)
     
 
 class TeacherDetailView(APIView):

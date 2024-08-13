@@ -16,7 +16,7 @@ class Courses(models.Model):
     course_trainer= models.CharField(max_length=20)
     course_students= models.PositiveSmallIntegerField()
     course_date = models.DateField()
-    # classes = models.ManyToManyField(ClassroomPeriod, related_name='courses')
+    # classperiod = models.ManyToManyField(ClassroomPeriod, related_name='courses')
 
     def __str__(self):
-        return f"{self.name} {self.description}"
+        return f"{self.id} {self.name}"
