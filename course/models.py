@@ -1,22 +1,24 @@
+
 from django.db import models
+from teacher.models import Teacher
+from student.models import Student
 
-# from classroom_period.models import ClassroomPeriod
+class Course(models.Model):
+    course_id = models.IntegerField(default=1) 
+    course_title = models.CharField(max_length=20)
+    course_description = models.CharField(max_length=20)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    course_code = models.PositiveSmallIntegerField()
+    course_materials = models.TextField()
+    course_attendees = models.PositiveSmallIntegerField()
+    course_fee = models.CharField(max_length=20)  
 
-    
+    # ForeignKey to Teacher
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='courses') 
 
-class Courses(models.Model):
-    id = models.AutoField(primary_key=True)
-    name= models.CharField(max_length=20)
-    description = models.TextField()
-    location = models.TextField()
-    course_type = models.CharField(max_length=20)
-    course_duration = models.PositiveSmallIntegerField()
-    course_level = models.CharField(max_length=20)
-    course_fee = models.CharField(max_length=15)
-    course_trainer= models.CharField(max_length=20)
-    course_students= models.PositiveSmallIntegerField()
-    course_date = models.DateField()
-    # classperiod = models.ManyToManyField(ClassroomPeriod, related_name='courses')
+    # ManyToMany relationship with Student
+    students = models.ManyToManyField(Student, related_name='courses_enrolled', blank=True)
 
     def __str__(self):
-        return f"{self.id} {self.name}"
+        return f"{self.course_title} - {self.course_description}"

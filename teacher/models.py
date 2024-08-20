@@ -5,15 +5,18 @@ from django.db import models
 
 
 class Teacher(models.Model):
-    teacher_id = models.PositiveSmallIntegerField()
-    teacher_first_name = models.CharField(max_length=20)
-    teacher_email = models.EmailField()
+    classroom = models.CharField(max_length=20)
+    course = models.CharField(max_length=20)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
     phone_number = models.CharField(max_length=20)
-    department = models.CharField(max_length=20)
-    photo = models.ImageField()
-    experience = models.CharField(max_length=20)
-    teacher_last_name = models.CharField(max_length=20)
-    date_of_birth = models.DateField()
-    salary = models.PositiveSmallIntegerField()
-    def __str__(self):
-        return f"{self.teacher_id} {self.teacher_last_name}"
+    country = models.CharField(max_length=20)
+    salary = models.BigIntegerField()
+    hire_date = models.DateTimeField()
+    gender = models.CharField(max_length=10)
+    bio = models.TextField()
+    students = models.ManyToManyField(Student, related_name='teachers', blank=True)
+
+    def __str__(self): 
+        return f"{self.first_name} {self.last_name}"
