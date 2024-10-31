@@ -11,7 +11,7 @@ from .serializers import StudentSerializer
 from classroom_period.models import ClassroomPeriod
 from .serializers import ClassroomPeriodSerializer
 from .serializers import ClassesSerializer
-from course.models import Courses
+from course.models import Course
 from .serializers import CoursesSerializer
 from teacher.models import Teacher
 from .serializers import TeacherSerializer
@@ -75,7 +75,7 @@ class ClassesView(APIView):
     
 class CoursesView(APIView):
     def get(self,request):
-        courses = Courses.objects.all()
+        courses = Course.objects.all()
         serializer = CoursesSerializer(courses,many=True)
         serializer=MinimalCourseSerializer(courses,many=True)
         return Response(serializer)
@@ -104,7 +104,7 @@ class TeachersView(APIView):
 
 class StudentDetailView(APIView):
     def enroll(self, student,course_id):
-        course = Courses.objects.get(id= course_id)
+        course = Course.objects.get(id= course_id)
         student.courses.add(course)
         
     def post(self, request, id):
@@ -134,7 +134,7 @@ class StudentDetailView(APIView):
         return Response(status=status.HTTP_202_ACCEPTED)
     
     def unenroll(self, student, course_id):
-        course = Courses.objects.get(id=course_id)
+        course = Course.objects.get(id=course_id)
         student.courses.remove(course)
     def add_to_class(self, student, class_id):
         student_class = Class.objects.get(id=class_id)
